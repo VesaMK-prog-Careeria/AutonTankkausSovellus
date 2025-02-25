@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             x:Class="AutonHuoltoSovellus.TankkausPage"
+             Title="TankkausPage">
+    <VerticalStackLayout Padding="20">
+        <Label Text="Tankkauspäivämäärä:" />
+        <DatePicker x:Name="PaivaValinta" Date="{x:Static sys:DateTime.Now}" />
+        <Label Text="Tankattu määrä (litraa):" />
+            <Entry x:Name="LitratEntry" Keyboard="Numeric" />
+
+            <Label Text="Kilometrit:" />
+            <Entry x:Name="KilometritEntry" Keyboard="Numeric" Placeholder="Syötä kilometrit" />
+
+            <Button Text="Tallenna" Clicked="OnSaveClicked" />
+    </VerticalStackLayout>
+</ContentPage>
