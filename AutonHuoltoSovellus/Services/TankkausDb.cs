@@ -1,13 +1,29 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using AutonHuoltoSovellus.Models;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace AutonHuoltoSovellus.Services
 {
-    public class TankkausDb : DbContext
+    public partial class TankkausDb : DbContext
     {
         public DbSet<Tankkaus> Tankkaukset { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlite("Data Source=tankkaus.db");
+        {
+            // Tallennetaan tietokanta sovelluksen sallitulle alueelle
+            string dbPath = Path.Combine(FileSystem.AppDataDirectory, "TankkausData.db");
+
+#if DEBUG
+            System.Diagnostics.Debug.WriteLine($"[TankkausDb] Käytetään tietokantaa polussa: {dbPath}");
+#endif
+
+            options.UseSqlite($"Filename={dbPath}");
+        }
+
+        public TankkausDb()
+        {
+            Database.EnsureCreated();
+        }
 
         public async Task<List<Tankkaus>> GetTankkauksetAsync()
         {

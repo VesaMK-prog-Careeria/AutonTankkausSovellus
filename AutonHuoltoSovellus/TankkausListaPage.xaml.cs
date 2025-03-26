@@ -1,42 +1,68 @@
-using AutonHuoltoSovellus.Models;
+Ôªøusing AutonHuoltoSovellus.Models;
 using AutonHuoltoSovellus.Services;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace AutonHuoltoSovellus;
 
 public partial class TankkausListaPage : ContentPage
 {
-	public TankkausListaPage()
-	{
-		InitializeComponent();
-		LataaTankkaukset();
-	}
+    public ObservableCollection<Tankkaus> Tankkaukset { get; set; } = new();
 
-    private async void LataaTankkaukset()
+    public TankkausListaPage()
     {
-        using (var db = new TankkausDb())
-        {
-            var tankkaukset = await db.GetTankkauksetAsync();
-            TankkausList.ItemsSource = tankkaukset.OrderByDescending(t => t.Aika).ToList();
-        }
+        InitializeComponent();
+        BindingContext = this;
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await LataaTankkaukset();
+        // Debuggausta
+        Debug.WriteLine($"Tietokannan polku: {Path.Combine(FileSystem.AppDataDirectory, "TankkausData.db")}");
+    }
+
+    private async Task LataaTankkaukset()
+    {
+        using var db = new TankkausDb();
+        var lista = await db.GetTankkauksetAsync();
+        // Debuggausta
+        Debug.WriteLine($"Ladataan {lista.Count} tankkausta listalle");
+
+        Tankkaukset.Clear();
+        foreach (var t in lista.OrderByDescending(t => t.Aika))
+            Tankkaukset.Add(t);
     }
 
     private async void OnDeleteClicked(object sender, EventArgs e)
     {
-        var button = sender as Button;
-        var tankkaus = button?.CommandParameter as Tankkaus;
-
-        if (tankkaus != null)
+        if ((sender as Button)?.CommandParameter is Tankkaus tankkaus)
         {
-            bool confirm = await DisplayAlert("Vahvista poisto", $"Haluatko varmasti poistaa tankkauksen {tankkaus.Aika:d}?", "Kyll‰", "Peruuta");
+            bool confirm = await DisplayAlert("Vahvista poisto", $"Poistetaanko tankkaus {tankkaus.Aika:d}?", "Kyll√§", "Peruuta");
             if (confirm)
             {
-                using (var db = new TankkausDb())
-                {
-                    await db.PoistaTankkausAsync(tankkaus);
-                }
-                await DisplayAlert("Poistettu", "Tankkaus poistettiin onnistuneesti.", "OK");
-                LataaTankkaukset(); // P‰ivitet‰‰n lista
+                using var db = new TankkausDb();
+                await db.PoistaTankkausAsync(tankkaus);
+
+                await DisplayAlert("Poistettu", "Tankkaus poistettiin.", "OK");
+                await LataaTankkaukset();
             }
+        }
+    }
+
+    private async void OnPoistaKaikkiClicked(object sender, EventArgs e)
+    {
+        bool confirm = await DisplayAlert("Vahvista", "Poistetaanko KAIKKI tankkaukset?", "Kyll√§", "Peruuta");
+        if (confirm)
+        {
+            using var db = new TankkausDb();
+            var kaikki = await db.GetTankkauksetAsync();
+            db.Tankkaukset.RemoveRange(kaikki);
+            await db.SaveChangesAsync();
+
+            await DisplayAlert("Poistettu", "Kaikki tankkaukset poistettu.", "OK");
+            await LataaTankkaukset();
         }
     }
 }

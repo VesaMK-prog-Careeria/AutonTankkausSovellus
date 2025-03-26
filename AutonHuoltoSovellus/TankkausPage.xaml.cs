@@ -1,33 +1,31 @@
-using AutonHuoltoSovellus.Models;
+Ôªøusing AutonHuoltoSovellus.Models;
 using AutonHuoltoSovellus.Services;
+using System.Diagnostics;
+using CommunityToolkit.Maui.Alerts;
 
 namespace AutonHuoltoSovellus;
 
 public partial class TankkausPage : ContentPage
 {
-	public TankkausPage()
-	{
-		InitializeComponent();
+    public TankkausPage()
+    {
+        InitializeComponent();
         AsetaOletusKilometrit();
     }
 
     private async void AsetaOletusKilometrit()
     {
-        using (var db = new TankkausDb())
-        {
-            var viimeisinTankkaus = await db.GetViimeisinTankkausAsync();
-            if (viimeisinTankkaus != null)
-            {
-                KilometritEntry.Text = viimeisinTankkaus.Kilometrit.ToString();
-            }
-        }
+        using var db = new TankkausDb();
+        var viimeisin = await db.GetViimeisinTankkausAsync();
+        if (viimeisin != null)
+            KilometritEntry.Text = viimeisin.Kilometrit.ToString();
     }
 
     private async void OnSaveClicked(object sender, EventArgs e)
     {
         var tankkaus = new Tankkaus
         {
-            Aika = PaivaValinta.Date, //K‰ytt‰j‰n pvm valinta
+            Aika = PaivaValinta.Date,
             Litrat = double.Parse(LitratEntry.Text),
             Kilometrit = double.Parse(KilometritEntry.Text)
         };
@@ -39,9 +37,15 @@ public partial class TankkausPage : ContentPage
             db.SaveChanges();
         }
 
-        await DisplayAlert("Tallennus", "Tankkaus tallennettu onnistuneesti!", "OK");
+        // Debuggausta
+        Console.WriteLine($"Tankkaus tallennettu: {tankkaus.Aika:d} {tankkaus.Litrat} l, {tankkaus.Kilometrit} km");
 
-        //P‰ivitet‰‰n kilometrit kentt‰ viimeisimm‰n tankkauksen mukaan
-        AsetaOletusKilometrit();
+        // Community toolkit -kirjaston k√§ytt√∂√§
+        var snack = Snackbar.Make("Tankkaus tallennettu onnistuneesti!", duration: TimeSpan.FromSeconds(3));
+        await snack.Show();
+
+        //await DisplayAlert("Tallennus", "Tankkaus tallennettu onnistuneesti!", "OK");
+
+        await Navigation.PopAsync(); // Palaa listaan ‚Üí se p√§ivitt√§√§ itsens√§ OnAppearing():ssa
     }
 }

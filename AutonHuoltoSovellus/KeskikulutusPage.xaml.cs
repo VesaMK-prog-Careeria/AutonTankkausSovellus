@@ -33,8 +33,22 @@ public partial class KeskikulutusPage : ContentPage
                         };
                     }
 
-                    double yhteisLitrat = list.Skip(1).Sum(t => t.Litrat); // Skipataan ensimmäinen tankkaus
-                    double ajettuMatka = list.Last().Kilometrit - list.First().Kilometrit;
+                    //double yhteisLitrat = list.Skip(1).Sum(t => t.Litrat); // Skipataan ensimmäinen tankkaus
+                    //double ajettuMatka = list.Last().Kilometrit - list.First().Kilometrit;
+
+                    double yhteisLitrat = 0;
+                    double ajettuMatka = 0;
+
+                    // Lasketaan kulutus vertaamalla jokaista tankkausta edelliseen
+                    for (int i = 1; i < list.Count; i++)
+                    {
+                        double matka = list[i].Kilometrit - list[i - 1].Kilometrit;
+                        if (matka > 0)
+                        {
+                            yhteisLitrat += list[i].Litrat;
+                            ajettuMatka += matka;
+                        }
+                    }
 
                     // Lasketaan keskikulutus
                     double kulutus = ajettuMatka > 0 ? (yhteisLitrat * 100) / ajettuMatka : 0;

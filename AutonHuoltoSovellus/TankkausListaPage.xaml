@@ -6,8 +6,16 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="20">
-            <Label Text="Tallennetut Tankkaukset" FontSize="20" HorizontalOptions="Center" />
-            <CollectionView x:Name="TankkausList">
+            <Label Text="Tallennetut Tankkaukset" 
+                   FontSize="20" 
+                   HorizontalOptions="Center" />
+            <Button Text="Poista kaikki tankkaukset"
+                    BackgroundColor="DarkRed"
+                    TextColor="White"
+                    Clicked="OnPoistaKaikkiClicked" />
+            <CollectionView x:Name="TankkausList"
+                                ItemsSource="{Binding Tankkaukset}"
+                                ItemsLayout="VerticalList">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Frame BorderColor="LightGray" Padding="10" Margin="5">
@@ -23,4 +31,5 @@
             </CollectionView>
         </VerticalStackLayout>
     </ScrollView>
+
 </ContentPage>
