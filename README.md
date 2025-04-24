@@ -48,9 +48,6 @@ Tieto tallennetaan laitteen sisäiseen SQLite-tietokantaan kansiossa FileSystem.
 
     Windows 10/11
 
-📸 Näyttökuva sovelluksesta
-
-![Sovelluksen näkymä](images/sovellus.png)
 
 ✨ Tulevia parannuksia
 
