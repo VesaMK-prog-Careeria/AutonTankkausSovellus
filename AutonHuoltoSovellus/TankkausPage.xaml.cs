@@ -13,6 +13,7 @@ public partial class TankkausPage : ContentPage
         AsetaOletusKilometrit();
     }
 
+    // HAetaan viimeisin tankkaus ja asetetaan sen kilometrit-kenttä oletusarvoksi
     private async void AsetaOletusKilometrit()
     {
         using var db = new TankkausDb();
@@ -21,6 +22,7 @@ public partial class TankkausPage : ContentPage
             KilometritEntry.Text = viimeisin.Kilometrit.ToString();
     }
 
+    // Tallenna tankkaus tietokantaan ja palaa listaan
     private async void OnSaveClicked(object sender, EventArgs e)
     {
         var tankkaus = new Tankkaus

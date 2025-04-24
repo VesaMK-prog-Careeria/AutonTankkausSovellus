@@ -10,8 +10,8 @@
                 <DataTemplate>
                     <Border Padding="10" Margin="5">
                         <VerticalStackLayout>
-                            <Label Text="{Binding Month}" FontSize="18" />
-                            <Label Text="{Binding Consumption}" FontSize="16" />
+                            <Label Text="{Binding Kuukausi}" FontSize="18" />
+                            <Label Text="{Binding Kulutus}" FontSize="16" />
                         </VerticalStackLayout>
                     </Border>
                 </DataTemplate>

@@ -5,6 +5,7 @@ using System.Diagnostics;
 
 namespace AutonHuoltoSovellus;
 
+// Tässä tiedostossa on TankkausListaPage-luokka, joka vastaa tankkauslistan näyttämisestä ja hallinnasta.
 public partial class TankkausListaPage : ContentPage
 {
     public ObservableCollection<Tankkaus> Tankkaukset { get; set; } = new();
